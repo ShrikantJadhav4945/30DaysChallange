@@ -1,0 +1,36 @@
+class Solution {
+    public int numFriendRequests(int[] ages) {
+        int[] count = new int[121]; // To store the frequency of each age (1-120)
+        
+        // Count the frequency of each age
+        for (int age : ages) {
+            count[age]++;
+        }
+
+        int totalRequests = 0;
+
+        // Iterate over all possible age combinations
+        for (int x = 1; x <= 120; x++) {
+            if (count[x] == 0) continue;
+
+            for (int y = 1; y <= 120; y++) {
+                if (count[y] == 0) continue;
+
+                // Check if x can send a friend request to y
+                if (isValidRequest(x, y)) {
+                    totalRequests += count[x] * count[y];
+                    // Subtract self-requests when x == y
+                    if (x == y) {
+                        totalRequests -= count[x];
+                    }
+                }
+            }
+        }
+
+        return totalRequests;
+    }
+
+    private boolean isValidRequest(int x, int y) {
+        return !(y <= 0.5 * x + 7 || y > x);
+    }
+}
