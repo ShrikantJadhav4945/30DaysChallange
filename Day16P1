@@ -1,0 +1,24 @@
+class Solution {
+    public boolean isValidSerialization(String preorder) {
+        String[] nodes = preorder.split(",");
+        int slots = 1; // Start with one slot for the root
+
+        for (String node : nodes) {
+            // Consume one slot for the current node
+            slots--;
+
+            // If slots go negative, the string is invalid
+            if (slots < 0) {
+                return false;
+            }
+
+            // Non-null nodes add two slots for their children
+            if (!node.equals("#")) {
+                slots += 2;
+            }
+        }
+
+        // All slots must be used up
+        return slots == 0;
+    }
+}
