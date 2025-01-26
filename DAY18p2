@@ -1,0 +1,33 @@
+import java.util.*;
+
+class Solution {
+    public int minExtraChar(String s, String[] dictionary) {
+        // Convert dictionary into a HashSet for faster lookups
+        Set<String> wordSet = new HashSet<>(Arrays.asList(dictionary));
+        
+        int n = s.length();
+        // dp[i] represents the minimum extra characters for the prefix s[0..i-1]
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        
+        // Base case: no extra characters for an empty prefix
+        dp[0] = 0;
+        
+        // Iterate over all substrings
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                String substring = s.substring(j, i);
+                // If substring is in the dictionary, no extra characters are added
+                if (wordSet.contains(substring)) {
+                    dp[i] = Math.min(dp[i], dp[j]);
+                } else {
+                    // Otherwise, count all characters in substring as extra
+                    dp[i] = Math.min(dp[i], dp[j] + i - j);
+                }
+            }
+        }
+        
+        // The result for the full string is stored in dp[n]
+        return dp[n];
+    }
+}
