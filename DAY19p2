@@ -1,0 +1,19 @@
+class Solution {
+    public static String encode(String s) {
+        StringBuilder encoded = new StringBuilder();
+        int count = 1;
+
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == s.charAt(i - 1)) {
+                count++;
+            } else {
+                encoded.append(s.charAt(i - 1)).append(count);
+                count = 1; // Reset the count for the next character
+            }
+        }
+        encoded.append(s.charAt(s.length() - 1)).append(count);
+
+        return encoded.toString();
+    }
+}
+  
