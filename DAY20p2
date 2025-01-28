@@ -1,0 +1,84 @@
+import java.util.*;
+
+class Solution {
+    public int[] countSubgraphsForEachDiameter(int n, int[][] edges) {
+        // Adjacency list representation of the graph
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0] - 1].add(edge[1] - 1);
+            graph[edge[1] - 1].add(edge[0] - 1);
+        }
+        
+        int[] result = new int[n - 1];
+        
+        // Iterate over all subsets of nodes (bitmasking)
+        for (int mask = 1; mask < (1 << n); mask++) {
+            List<Integer> nodes = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) != 0) {
+                    nodes.add(i);
+                }
+            }
+            
+            if (isConnected(graph, nodes)) {
+                int diameter = calculateDiameter(graph, nodes);
+                if (diameter > 0) {
+                    result[diameter - 1]++;
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    // Helper function to check if the subset of nodes is connected
+    private boolean isConnected(List<Integer>[] graph, List<Integer> nodes) {
+        Set<Integer> visited = new HashSet<>();
+        dfs(graph, nodes.get(0), visited, new HashSet<>(nodes));
+        return visited.size() == nodes.size();
+    }
+    
+    private void dfs(List<Integer>[] graph, int node, Set<Integer> visited, Set<Integer> validNodes) {
+        visited.add(node);
+        for (int neighbor : graph[node]) {
+            if (!visited.contains(neighbor) && validNodes.contains(neighbor)) {
+                dfs(graph, neighbor, visited, validNodes);
+            }
+        }
+    }
+    
+    // Helper function to calculate the diameter of the subgraph
+    private int calculateDiameter(List<Integer>[] graph, List<Integer> nodes) {
+        int maxDistance = 0;
+        for (int start : nodes) {
+            maxDistance = Math.max(maxDistance, bfs(graph, start, new HashSet<>(nodes)));
+        }
+        return maxDistance;
+    }
+    
+    private int bfs(List<Integer>[] graph, int start, Set<Integer> validNodes) {
+        Queue<int[]> queue = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        queue.offer(new int[]{start, 0});
+        visited.add(start);
+        
+        int maxDistance = 0;
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int node = current[0], distance = current[1];
+            maxDistance = Math.max(maxDistance, distance);
+            
+            for (int neighbor : graph[node]) {
+                if (!visited.contains(neighbor) && validNodes.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.offer(new int[]{neighbor, distance + 1});
+                }
+            }
+        }
+        
+        return maxDistance;
+    }
+}
